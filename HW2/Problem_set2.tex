@@ -1,0 +1,135 @@
+\documentclass[12pt]{article}
+\usepackage{design_ASC}
+\usepackage{ifthen}
+\usepackage{booktabs}
+\usepackage{bbm}
+\newboolean{sol}   
+\newcommand{\prsol}[1]{\ifthenelse{\boolean{sol}}{{\color{blue}\textbf{Solution:} #1}}{} }
+
+\setlength\parindent{0pt} %% Do not touch this
+\setlength{\parskip}{1em}
+
+%% -----------------------------
+%% TITLE
+%% -----------------------------
+\title{Problem Set \#2} %% Assignment Title
+
+\author{ECE 4424 / CS 4824 - Machine learning\\ %% Code and course name
+\textsc{Virginia Tech}
+}
+
+%\date{\today} %% Change "\today" by another date manually
+%% -----------------------------
+%% -----------------------------
+
+%% %%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+\setboolean{sol}{false}   
+
+
+\setlength{\droptitle}{-5em}    
+%% %%%%%%%%%%%%%%%%%%%%%%%%%
+\maketitle
+
+% --------------------------
+% Start here
+% --------------------------
+
+\begin{itemize}
+    \item Feel free to collaborate with other classmates in doing the homework. Please indicate your collaborators with their student ID. You should, however, write down your solution yourself. Please try to keep the answers brief and clear.
+    \item Whenever you need clarification, please post the related questions on Piazza under the corresponding homework folder.
+    \item Total: 100 points
+    \item \textbf{Due date: 10/5/2020, 11:59PM ET}
+    \item Late submission: each student will have a total of \textbf{four} free late (calendar) days to use for homeworks. Once these late days are exhausted, any assignments turned in late will be penalized 20\% per late day. However, no assignment will be accepted more than three days after its due date. Each 24 hours or part thereof that a homework is late uses up one full late day. 
+\end{itemize}
+
+
+
+% %%%%%%%%%%%%%%%%%%%
+\section{Maximum likelihood estimation}
+\label{sec:sl}
+% %%%%%%%%%%%%%%%%%%%
+
+\textbf{Question \ref{sec:sl}.1 (30 points):} Suppose we throw a coin $n$ times. Let $\mathcal{D}=\{y_1,...,y_n\}$ denote the dataset we obtain, where $y_i\in\{0,1\}$ is the outcome of the $i$-th throw (i.e., $y_i=1$ if the coin comes up to be a head and 0 if it comes up to be a tail). We are interested in finding the maximum likelihood estimation of the probability that the coin comes up with a head, $\theta\in[0,1]$, given this dataset $\mathcal{D}$.
+\begin{itemize}
+    \item[a)] (10 pts) Write out $P_\theta(\mathcal{D})$, i.e., the probability of observing the dataset $\mathcal{D}$ under the probability distribution is parameterized by $\theta$. Hint: this probability distribution is NOT binomial distribution, since we assume that you have already observed the outcome of every coin.
+    \item[b)] (10 pts) Write out the log-likelihood, $\log P_\theta(\mathcal{D})$
+    \item[c)] (10 pts) Obtain the maximum likelihood estimation of $\theta$ given the dataset $\mathcal{D}$
+\end{itemize}
+
+% %%%%%%%%%%%%%%%%%%%
+\section{Gaussian discriminant analysis}
+\label{sec:gda}
+% %%%%%%%%%%%%%%%%%%%
+
+\textbf{Question \ref{sec:gda}.1 (30 points):} Suppose we are given a dataset $\mathcal{D}=\{(x_1,y_1),\ldots,(x_n,y_n)\}$, where $x_i\in\mathbbm{R}^d$ and $y_i\in\{0,1\}$. We will model the joint distribution of $(x,y)$ according to:
+\begin{align*}
+    p(y)&=\phi^y(1-\phi)^{1-y}\\
+    p(x|y=0)&=\frac{1}{(2\pi)^{d/2}|\Gamma|^{1/2}}\exp\left(-\frac{1}{2}(x-\mu_0)^\top\Gamma^{-1}(x-\mu_0)\right)\\
+    p(x|y=1)&=\frac{1}{(2\pi)^{d/2}|\Gamma|^{1/2}}\exp\left(-\frac{1}{2}(x-\mu_1)^\top\Gamma^{-1}(x-\mu_1)\right)
+\end{align*}
+Here, the parameters of our model are $\phi$, $\Gamma$, $\mu_0$ and $\mu_1$. Note that while there are two different mean vectors $\mu_0$ and $\mu_1$, there is only one covariance matrix $\Gamma$.
+\begin{enumerate}
+    \item[a)] (5 pts) Suppose we have already fit $\phi$, $\Gamma$, $\mu_0$ and $\mu_1$, and now want to make a prediction at some new query point $x$. Show that the posterior distribution of the label at $x$ can be written as $$p(y = 1|x)=\frac{1}{1 + \exp(-\theta^\top x+\theta_0)},$$
+    where the vector $\theta$ and scalar $\theta_0$ are some appropriate functions of $\phi$, $\Gamma$, $\mu_0$ and $\mu_1$ that you need to specify.
+    \item[b)] (25 pts) For this part of the problem only, you may assume $d$ (the dimension of $x$)
+    is 1, so that $\Gamma=\sigma^2$ is just a real number, and likewise the determinant of $\Gamma$ is given by $|\Gamma|=\sigma^2$. Given the dataset, we claim that the maximum likelihood estimates of the parameters are given by
+    \begin{align*}
+        \phi&=\frac{1}{n}\sum_{i=1}^n\mathbbm{1}\{y_i=1\}\\
+        \mu_0&=\frac{\sum_{i=1}^n\mathbbm{1}\{y_i=0\}x_i}{\sum_{i=1}^n\mathbbm{1}\{y_i=0\}}\\
+        \mu_1&=\frac{\sum_{i=1}^n\mathbbm{1}\{y_i=1\}x_i}{\sum_{i=1}^n\mathbbm{1}\{y_i=1\}}\\
+        \Gamma &= \frac{1}{n}\sum_{i=1}^n(x_i-\mu_{y_i})(x_i-\mu_{y_i})^\top
+    \end{align*}
+    where $\mathbbm{1}(\cdot)$ is the indicator function we have seen in class. The log-likelihood of the data is $$\log P_\Theta(\mathcal{D})=\log\Pi_{i=1}^n p(x_i,y_i)=\log\Pi_{i=1}^n p(x_i|y_i)p(y_i).$$
+    By maximizing $\log P_\Theta(\mathcal{D})$ with respect to the four parameters, prove that the maximum likelihood estimates of $\phi$, $\Gamma$, $\mu_0$ and $\mu_1$ are indeed as given in the formulas above. (You may assume that there is at least one positive and one negative example, so that the denominators in the definitions of $\mu_0$ and $\mu_1$ above are non-zero.)
+\end{enumerate} 
+
+
+% %%%%%%%%%%%%%%%%%%%
+\section{Programming assignment: Linear Regression (40 pts)}
+\label{sec:s5}
+% %%%%%%%%%%%%%%%%%%%
+
+For the following programming assignment, please download the datasets and iPython notebooks from Canvas and submit the following:
+\begin{itemize}
+    \item Completed and ready-to-run iPython notebooks. Note: we will inspect the code and run your notebook if needed. If we cannot run any section of your notebook, you will not receive any points for the task related to that section. 
+    \item Responses (texts, codes, and/or figures) to the following problems/tasks
+\end{itemize}
+
+
+In this programming exercise, you will build a linear regression model and apply it to a covid-19 sample dataset. 
+
+
+\textbf{Task P1 (6 pts):} Complete the codes that generate the three visualization graphs that show the trend of the epidemic progression ("People\_tested", "Deaths", and "New\_positive\_cases"). Copy them to the solution file.
+
+\textbf{Task P2 (4 pts):} Complete the function \texttt{predict\_output}. Copy the the outputs of the code to the solution file.
+
+\textbf{Task P3 (6 pts):} Let the regression cost function be given by
+$$L_D(w) = \frac{1}{n}\sum_{i=1}^n (y_i-w\cdot x_i)^2,$$
+where $x_i\in \mathrm{R}^d$ is the input feature of dimension $d$, $y_i\in\mathrm{R}$ is the output response, and $w\in\mathrm{R}^d$ is the regression weights. Complete the function \texttt{weight\_derivative} to calculate the derivative of the cost function with respect to regression weights $w$, i.e., $\frac{\partial}{\partial w}L_D(w)$. Note that this should be a $d$ dimensional vector. Also copy the output of the code for the test example to the solution file.
+
+\textbf{Task P4  (5 pts):}  Complete the code section to perform the gradient decent in the function \textbf{regression\_gradient\_descent}. Copy the code to the solution file.
+
+
+\textbf{Task P5 (3 pts):} Specify the initial weights, step size and tolerance for the function \textbf{regression\_gradient\_descent}. Print the outputs of the code.
+
+
+\textbf{Task P6 (3 pts):} Use the learned weights to predict 'People\_tested' in the last three weeks in the dataset. Copy the predictions to the solution file, and calculate the test error
+$$\frac{1}{n_{\mathrm{tst}}}\sum_{i=1}^{n_{\mathrm{tst}}} (y_i^{\mathrm{tst}}-\hat{y}_i^{\mathrm{tst}})^2,$$
+where $n_{\mathrm{tst}}$ is the number of test data, $y_i^{\mathrm{tst}}$ is the true label, $\hat{y}_i^{\mathrm{tst}}$ is the predicted label.
+
+\textbf{Task P7 (3 pts):} Specify the initial weights, step size and tolerance for the function \textbf{regression\_gradient\_descent}. Print the outputs of the code.
+
+\textbf{Task P8 (4 pts):} Use the learned weights to predict 'People\_tested' in the last three weeks in the dataset. Find the value of the model predictions on the 10th day of the forecasting period. Also print the actual number of people tested on that particular day. Copy the predictions to the solution file, and calculate the test error. Note: here we are asking you to report the number before normalization. So you need to convert the prediction back to the unit of people.
+
+\textbf{Task P9 (6 pts):} Explore on your own. Report your question of investigation, as well as your results/interpretation in the solution file.
+
+
+
+
+
+
+
+
+
+\end{document}
